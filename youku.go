@@ -40,6 +40,10 @@ type youkuMessage struct {
 }
 
 func (s *Youku) parseM3u8(vid string) PlayList {
+	return parseYoukuM3u8(vid)
+}
+
+func parseYoukuM3u8(vid string) PlayList {
 	uri := fmt.Sprintf("http://v.youku.com/player/getPlayList/VideoIDS/%s/ctype/12/ev/1", vid)
 	body, err := request(uri)
 	if (err != nil) {
