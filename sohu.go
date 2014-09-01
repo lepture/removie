@@ -11,18 +11,18 @@ import (
 type Sohu struct {}
 
 func (s *Sohu) M3U8(url string) PlayList {
-	vid := parseVideoID(url)
+	vid := s.parseVideoID(url)
 	if vid == "" {
 		return PlayList{}
 	}
-	return parseM3u8(vid)
+	return s.parseM3u8(vid)
 }
 
-var vidRegex = regexp.MustCompile(`.*var\s+vid\s*=\s*"(\d+)"`)
+var sohuIDRegex = regexp.MustCompile(`.*var\s+vid\s*=\s*"(\d+)"`)
 // Find vid in the page
-func parseVideoID(url string) string {
+func (s *Sohu) parseVideoID(url string) string {
 	body, _ := request(url)
-	m := vidRegex.FindStringSubmatch(string(body))
+	m := sohuIDRegex.FindStringSubmatch(string(body))
 	if (m == nil) {
 		return ""
 	}
@@ -30,11 +30,11 @@ func parseVideoID(url string) string {
 }
 
 // SOHU API key. You can set an API key with environment variable: `REMOVIE_SOHU_KEY`
-var apiKey = os.Getenv("REMOVIE_SOHU_KEY")
-var apiUrl string = "http://api.tv.sohu.com/v4/video/info/"
+var sohuApiKey = os.Getenv("REMOVIE_SOHU_KEY")
+var sohuApiUrl = "http://api.tv.sohu.com/v4/video/info/"
 
 // Struct for JSON unmarshal
-type message struct {
+type sohuMessage struct {
 	Status int
 	Data struct {
 		Url_original string
@@ -45,17 +45,17 @@ type message struct {
 }
 
 // Parse m3u8 play list
-func parseM3u8(vid string) PlayList {
-	if apiKey == "" {
-		apiKey = "f351515304020cad28c92f70f002261c"
+func (s *Sohu) parseM3u8(vid string) PlayList {
+	if sohuApiKey == "" {
+		sohuApiKey = "f351515304020cad28c92f70f002261c"
 	}
-	url := fmt.Sprintf("%s%s.json?api_key=%s", apiUrl, vid, apiKey)
+	url := fmt.Sprintf("%s%s.json?api_key=%s", sohuApiUrl, vid, sohuApiKey)
 	body, err := request(url)
 	if (err != nil) {
 		return PlayList{}
 	}
 
-	var m message
+	var m sohuMessage
 	jerr := json.Unmarshal(body, &m)
 	if (jerr != nil) {
 		return PlayList{}
