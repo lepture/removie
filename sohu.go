@@ -10,8 +10,8 @@ import (
 
 type Sohu struct {}
 
-func (s *Sohu) M3U8(url string) PlayList {
-	vid := s.parseVideoID(url)
+func (s *Sohu) M3U8(uri string) PlayList {
+	vid := s.parseVideoID(uri)
 	if vid == "" {
 		return PlayList{}
 	}
@@ -20,8 +20,8 @@ func (s *Sohu) M3U8(url string) PlayList {
 
 var sohuIDRegex = regexp.MustCompile(`.*var\s+vid\s*=\s*"(\d+)"`)
 // Find vid in the page
-func (s *Sohu) parseVideoID(url string) string {
-	body, _ := request(url)
+func (s *Sohu) parseVideoID(uri string) string {
+	body, _ := request(uri)
 	m := sohuIDRegex.FindStringSubmatch(string(body))
 	if (m == nil) {
 		return ""
@@ -49,8 +49,8 @@ func (s *Sohu) parseM3u8(vid string) PlayList {
 	if sohuApiKey == "" {
 		sohuApiKey = "f351515304020cad28c92f70f002261c"
 	}
-	url := fmt.Sprintf("%s%s.json?api_key=%s", sohuApiUrl, vid, sohuApiKey)
-	body, err := request(url)
+	uri := fmt.Sprintf("%s%s.json?api_key=%s", sohuApiUrl, vid, sohuApiKey)
+	body, err := request(uri)
 	if (err != nil) {
 		return PlayList{}
 	}
