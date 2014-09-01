@@ -75,7 +75,6 @@ func parseYoukuM3u8(vid string) PlayList {
 	q.Set("ev", "1")
 	u.RawQuery = q.Encode()
 
-	uri = fmt.Sprintf("http://pl.youku.com/playlist/m3u8?vid=%s&ts=%d&keyframe=1&ep=%s&oip=%d&ctype=12&ev=1&token=%s&sid=%s&type=", data.Videoid, ts, ep2.Ep, data.Ip, ep2.Token, ep2.Sid)
 	return PlayList{
 		Original: fmt.Sprintf("%s&type=%s", u, "hd2"),
 		High: fmt.Sprintf("%s&type=%s", u, "hd2"),
